@@ -12,6 +12,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Ecommercer.Communictaion\Ecommercer.Communictaion.csproj" />
+    <ProjectReference Include="..\..\Shared\Ecommercer.Exception\Ecommercer.Exception.csproj" />
+    <ProjectReference Include="..\Ecommercer.Aplication\Ecommercer.Aplication.csproj" />
+    <ProjectReference Include="..\Ecommercer.Infra\Ecommercer.Infra.csproj" />
   </ItemGroup>
 
 </Project>

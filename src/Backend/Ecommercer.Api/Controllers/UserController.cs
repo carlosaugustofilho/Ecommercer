@@ -1,20 +1,39 @@
-﻿using Ecommercer.Communictaion.Requests;
-using Ecommercer.Communictaion.Response;
-using Microsoft.AspNetCore.Http;
+﻿using Ecommercer.Aplication.Cases.User.Registrar;
+using Ecommercer.Aplication.UseCases.User.Registrar;
+using Ecommercer.Communictaion.Requests;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Ecommercer.Api.Controllers
 {
-    [Route("[controller]")]
     [ApiController]
+    [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        [HttpPost]
-        [ProducesResponseType(typeof(ResponseRegistrarUsuarioJson), StatusCodes.Status201Created)]
-        public IActionResult Register(RequestRegistrarUsuarioJson request)
+        private readonly IRegistroUsaurio _registroUsaurio;
+
+        public UserController(IRegistroUsaurio registroUsaurio)
         {
-            return Ok();
+            _registroUsaurio = registroUsaurio;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Register([FromBody] RequestRegistrarUsuarioJson request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var response = await _registroUsaurio.Execute(request);
+                return Created(string.Empty, response);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

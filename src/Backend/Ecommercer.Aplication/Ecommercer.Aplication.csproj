@@ -6,4 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="FluentValidation" Version="11.9.2" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics" Version="8.0.0" />
+    <PackageReference Include="System.DirectoryServices" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Ecommercer.Communictaion\Ecommercer.Communictaion.csproj" />
+    <ProjectReference Include="..\Ecommercer.Domain\Ecommercer.Domain.csproj" />
+    <ProjectReference Include="..\Ecommercer.Infra\Ecommercer.Infra.csproj" />
+  </ItemGroup>
+
 </Project>
