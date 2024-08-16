@@ -1,11 +1,11 @@
 ﻿using Ecommercer.Domain.Repositories;
 using Ecommercer.Infra.Context;
 using Ecommercer.Infra.Datacontext.Repositories;
-using Ecommercer.Infra.Extensions;
+using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
+using System.Reflection;
 
 namespace Ecommercer.Infra
 {
@@ -15,11 +15,12 @@ namespace Ecommercer.Infra
         {
             AddRepositories(services);
             AddContext(services, configuration);
+            AddMigrator_MySql(services, configuration);
         }
 
         private static void AddContext(IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.ConnectionString();
+            var connectionString = configuration.GetConnectionString("ConnectionMySQLServer");
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 35));
 
             services.AddDbContext<DbEcommecer>(dbContextOptions =>
@@ -31,6 +32,28 @@ namespace Ecommercer.Infra
         private static void AddRepositories(IServiceCollection services)
         {
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        }
+
+        private static void AddMigrator_MySql(this IServiceCollection services, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("ConnectionMySQLServer");
+
+            services.AddFluentMigratorCore()
+                .ConfigureRunner(rb => rb
+                    .AddMySql5()
+                    .WithGlobalConnectionString(connectionString)
+                    .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations())
+                .AddLogging(lb => lb.AddFluentMigratorConsole());
+        }
+
+        public static void ApplyMigrations(IServiceProvider serviceProvider)
+        {
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var migrationRunner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+                migrationRunner.ListMigrations();
+                migrationRunner.MigrateUp();
+            }
         }
     }
 }
