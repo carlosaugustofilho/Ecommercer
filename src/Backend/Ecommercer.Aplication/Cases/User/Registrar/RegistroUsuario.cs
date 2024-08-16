@@ -38,19 +38,24 @@ namespace Ecommercer.Aplication.UseCases.User.Registrar
             var usuario = _mapper.Map<Usuario>(request);
             usuario.Senha = CriptoSenha.Encrypt(request.Senha, request.Nome);
 
-            if (await _usuarioRepository.ExistUsuarioAtivioEmail(request.Email))
+            if (_usuarioRepository != null && await _usuarioRepository.ExistUsuarioAtivioEmail(request.Email))
             {
                 throw new ArgumentException("O email já está em uso.");
             }
 
-            await _usuarioRepository.Add(usuario);
+            if (_usuarioRepository != null)
+            {
+                await _usuarioRepository.Add(usuario);
+            }
 
             return new ResponseRegistrarUsuarioJson
             {
                 Name = request.Nome,
             };
         }
+
+
     }
 
-    
+
 }
